@@ -20,7 +20,7 @@ contract Token is TokenInterface {
 
     constructor() {
         owner = msg.sender;
-        emit TokenCreated(name, symbol, decimals);
+        emit TokenCreated(name, symbol, decimals, owner);
     }
 
     // Create token - set name, symbol, decimals
@@ -29,7 +29,7 @@ contract Token is TokenInterface {
         symbol = _symbol;
         decimals = _decimals;
 
-        emit TokenCreated(_name, _symbol, _decimals);
+        emit TokenCreated(name, symbol, decimals, msg.sender);
     }
 
     // Swap function: Buy or Sell tokens

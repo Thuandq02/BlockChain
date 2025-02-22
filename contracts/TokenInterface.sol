@@ -11,7 +11,7 @@ interface TokenInterface {
     function migrate(address newContract) external;
     function withdraw() external;
 
-    event TokenCreated(string name, string symbol, uint8 decimals);
+    event TokenCreated(string name, string symbol, uint8 decimals, address tokenAddress);
     event TokenSwapped(address token, uint256 amount, bool isBuy);
     event ThresholdSet(uint256 threshold);
     event PriceUpdated(address token, uint256 price);
