@@ -88,7 +88,6 @@ contract Token is TokenInterface {
     // Migrate to a new contract
     function migrate(address newContract) external onlyOwner {
         emit Migrate(newContract);
-        // Optional: Add migration logic here, like transferring remaining tokens
     }
 
     // Fallback function to receive Ether
