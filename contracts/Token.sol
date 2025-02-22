@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import './TokenInterface.sol';
 
 contract Token is TokenInterface {
-    string public name;
-    string public symbol;
-    uint8 public decimals;
+    string public name = 'Admin Token';
+    string public symbol = 'AK';
+    uint8 public decimals = 18;
     address public owner;
     
     mapping(address => uint256) public balances;
@@ -18,13 +18,9 @@ contract Token is TokenInterface {
         _;
     }
 
-    constructor(string memory _name, string memory _symbol, uint8 _decimals) {
-        name = _name;
-        symbol = _symbol;
-        decimals = _decimals;
+    constructor() {
         owner = msg.sender;
-
-        emit TokenCreated(_name, _symbol, _decimals);
+        emit TokenCreated(name, symbol, decimals);
     }
 
     // Create token - set name, symbol, decimals
