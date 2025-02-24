@@ -20,7 +20,6 @@ contract Token is TokenInterface {
 
     constructor() {
         owner = msg.sender;
-        emit TokenCreated(name, symbol, decimals, owner);
     }
 
     // Create token - set name, symbol, decimals

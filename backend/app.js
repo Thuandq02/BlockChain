@@ -1,9 +1,12 @@
 // app.js
-const express = require('express');
-const contract = require('./contract');
-const connection = require('./db');
-const Web3 = require('web3');
-require('dotenv').config();
+import express from 'express';
+
+import Contract from './contract.js';
+import connection from './db.js';
+import Web3 from 'web3';
+import Dotenv from 'dotenv';
+
+Dotenv.config();
 
 const app = express();
 const web3 = new Web3();
@@ -15,7 +18,7 @@ app.use(express.json());
 app.post('/create-token', (req, res) => {
     const { name, symbol, decimals, fromAddress } = req.body;
   
-    contract.methods.createToken(name, symbol, decimals).send({ from: fromAddress })
+    Contract.methods.createToken(name, symbol, decimals).send({ from: fromAddress })
       .then(receipt => {
         res.json({ receipt });
         // Optionally store token creation event in MySQL database
@@ -37,7 +40,7 @@ app.post('/create-token', (req, res) => {
 app.get('/balance/:address', (req, res) => {
     const userAddress = req.params.address;
     
-    contract.methods.getBalance(userAddress).call()
+    Contract.methods.getBalance(userAddress).call()
       .then(balance => {
         res.json({ balance: balance });
       })
@@ -50,7 +53,7 @@ app.get('/balance/:address', (req, res) => {
   app.post('/swap', (req, res) => {
     const { tokenAddress, amount, isBuy, fromAddress } = req.body;
   
-    contract.methods.swap(tokenAddress, amount, isBuy).send({ from: fromAddress })
+    Contract.methods.swap(tokenAddress, amount, isBuy).send({ from: fromAddress })
       .then(receipt => {
         res.json({ receipt });
         // Store swap data in MySQL database
@@ -72,7 +75,7 @@ app.get('/balance/:address', (req, res) => {
   app.post('/set-price', (req, res) => {
     const { tokenAddress, price, fromAddress } = req.body;
   
-    contract.methods.setPrice(tokenAddress, price).send({ from: fromAddress })
+    Contract.methods.setPrice(tokenAddress, price).send({ from: fromAddress })
       .then(receipt => {
         res.json({ receipt });
         // Store price data in MySQL database
@@ -87,7 +90,7 @@ app.get('/balance/:address', (req, res) => {
       })
       .catch(err => {
         res.status(500).json({ error: err.message });
-      });
+      });cd 
   });
   
   // Start server

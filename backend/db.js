@@ -1,6 +1,8 @@
 // db.js
-const mysql = require('mysql2');
-require('dotenv').config();
+import mysql from 'mysql2';
+import Dotenv from 'dotenv';
+
+Dotenv.config();
 
 // Tạo kết nối tới MySQL database
 const connection = mysql.createConnection({
@@ -19,4 +21,4 @@ connection.connect((err) => {
   console.log('Đã kết nối tới MySQL!');
 });
 
-module.exports = connection;
+export default connection;

@@ -1,9 +1,10 @@
 // contract.js
-const Web3 = require('web3');
-require('dotenv').config();
+import Web3 from 'web3';
+import Dotenv from 'dotenv';
 
-// Kết nối với Ethereum Node (thay đổi URL tùy thuộc vào mạng blockchain bạn sử dụng)
-const web3 = new Web3(new Web3.providers.HttpProvider(process.env.INFURA_URL));
+Dotenv.config();
+
+const web3 = new Web3(process.env.INFURA_URL);
 
 // Địa chỉ hợp đồng và ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
@@ -48,4 +49,4 @@ const contractABI =  [
 
 const contract = new web3.eth.Contract(contractABI, contractAddress);
 
-module.exports = contract;
+export default contract;
