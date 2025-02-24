@@ -2,16 +2,22 @@
 pragma solidity ^0.8.0;
 
 import './TokenInterface.sol';
+import './Minter.sol';
 
 contract Token is TokenInterface {
     string public name = 'Admin Token';
     string public symbol = 'AK';
-    uint8 public decimals = 18;
+    uint public decimals = 18;
     address public owner;
+    uint256 public creationFee = 0.01 ether;
     
     mapping(address => uint256) public balances;
-    mapping(address => uint256) public priceFeed; // mapping to store price data
-    uint256 public swapThreshold;
+    struct TokenInfo {
+        Token token;      
+        address creator;   
+    }
+
+    TokenInfo[] public tokens;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this");
@@ -22,51 +28,46 @@ contract Token is TokenInterface {
         owner = msg.sender;
     }
 
-    // Create token - set name, symbol, decimals
-    function createToken(string memory _name, string memory _symbol, uint8 _decimals) external onlyOwner {
-        name = _name;
-        symbol = _symbol;
-        decimals = _decimals;
+    // Cho phép owner thay đổi phí tạo coin nếu cần
+    function setCreationFee(uint256 fee) external {
+        require(msg.sender == owner, "Not authorized");
+        creationFee = fee;
+    }
 
-        emit TokenCreated(name, symbol, decimals, msg.sender);
+    // Create token - set name, symbol, decimals
+    function createToken(string memory _name, string memory _symbol) external payable returns (address) {
+        require(msg.value >= creationFee, "Insufficient fee");
+        Minter minter = new Minter(name, symbol);
+        minter.setMinter(address(this));
+        TokenInfo memory info = TokenInfo({
+            token: minter,
+            creator: msg.sender
+        });
+        tokens.push(info);
+
+        emit TokenCreated(msg.sender, address(minter), name, symbol);
+
+        return address(minter);
     }
 
     // Swap function: Buy or Sell tokens
-    function swap(address tokenAddress, uint256 amount, bool isBuy) external {
-        require(amount > 0, "Amount must be greater than 0");
-        uint256 price = priceFeed[tokenAddress];
-        require(price > 0, "Token price not available");
-
-        uint256 totalAmount = amount * price;
-        
+    function swap(address tokenAddress, uint256 amount, bool isBuy) external payable {
         if (isBuy) {
+            require(msg.value > 0, "Vui long gui ETH de mua token");
+            uint256 tokenAmount = msg.value * rate;
+            require(token.balanceOf(address(this)) >= tokenAmount, "Contract khong co du token");
+            // Chuyển token từ contract sang địa chỉ người mua
+            token.transfer(msg.sender, tokenAmount);
             require(balances[msg.sender] >= totalAmount, "Insufficient balance to buy");
             balances[msg.sender] -= totalAmount;
+            emit TokenSwapped(tokenAddress, amount);
+
         } else {
             balances[msg.sender] += totalAmount;
+            emit TokenSwapped(tokenAddress, amount);
         }
 
-        emit TokenSwapped(tokenAddress, amount, isBuy);
-    }
-
-    // Estimate the amount of tokens that can be swapped based on the current price
-    function estimateSwap(address tokenAddress, uint256 amount, bool isBuy) external view returns (uint256) {
-        uint256 price = priceFeed[tokenAddress];
-        require(price > 0, "Price for token is not set");
-        
-        uint256 totalAmount = amount * price;
-
-        if (isBuy) {
-            return totalAmount; // Amount in native currency needed to buy tokens
-        } else {
-            return totalAmount / price; // Amount of tokens the user will get after selling
-        }
-    }
-
-    // Set the swap threshold (minimum amount for swap)
-    function setThreshold(uint256 _threshold) external onlyOwner {
-        swapThreshold = _threshold;
-        emit ThresholdSet(_threshold);
+        emit TokenSwapped(tokenAddress, amount);
     }
 
     // Set the price for a token (can be used to update the price)
@@ -80,16 +81,11 @@ contract Token is TokenInterface {
         return balances[user];
     }
 
-    // Migrate to a new contract
-    function migrate(address newContract) external onlyOwner {
-        emit Migrate(newContract);
+    function getListToken() view external returns(TokenInfo[] memory) {
+        return tokens;
     }
 
     // Fallback function to receive Ether
     receive() external payable {}
 
-    // Destructor to withdraw contract balance to the owner
-    function withdraw() external onlyOwner {
-        payable(owner).transfer(address(this).balance);
-    }
 }

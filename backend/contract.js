@@ -4,7 +4,7 @@ import Dotenv from 'dotenv';
 
 Dotenv.config();
 
-const web3 = new Web3(process.env.INFURA_URL);
+const web3 = new Web3(new Web3.providers.WebsocketProvider(process.env.INFURA_WS));
 
 // Địa chỉ hợp đồng và ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
