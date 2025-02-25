@@ -1,38 +1,46 @@
 import React, { useState } from 'react';
-import '../App.css';
+import { ethers } from 'ethers';
+import { connectWallet } from '../services/web3';
+import TokenContractABI from '../Abi/TokenContract.json';
 
+const FACTORY_ADDRESS = "0x9d11d69636C8160eb3cffBdBBfcffaB47e7D0049";
 
-const baseUrl = 'http://localhost:3000';
-const TOKEN_ADDRESS = '0xF8aC3482509Cf7a8776f0ae4cDfed4c26FA895e4';
+function BuySell() {
+  const [formData, setFormData] = useState({
+        name: '',
+        symbol: ''
+      });
+  const [result, setResult] = useState('');
 
-// Component Swap Token
-function SwapToken() {
-    const [formData, setFormData] = useState({
-      tokenAddress: '',
-      amount: '',
-      isBuy: 'true'
-    });
-    const [result, setResult] = useState('');
-  
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      fetch(`${baseUrl}/swap`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tokenAddress: formData.tokenAddress,
-          amount: Number(formData.amount),
-          isBuy: formData.isBuy === 'true',
-          fromAddress: TOKEN_ADDRESS
-        })
-      })
-        .then((res) => res.json())
-        .then((data) => setResult('Success: ' + JSON.stringify(data, null, 2)))
-        .catch((err) => setResult('Error: ' + err));
-    };
-  
-    return (
-      <div className='section'>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const provider = await connectWallet();
+    if (!provider) return;
+
+    const signer = await provider.getSigner();
+    const factoryContract = new ethers.Contract(FACTORY_ADDRESS, TokenContractABI.abi, signer);
+
+    try {
+      if (formData.isBuy === 'true') {
+        // const cost = await factoryContract.getBuyCost(coinIndex, amount);
+        // const tx = await factoryContract.buyTokens(coinIndex, amount, { value: cost });
+        setResult("Giao dịch mua token đang được xử lý...");
+        // await tx.wait();
+        setResult("Mua token thành công!");
+      } else {
+        const tx = await factoryContract.sellTokens(coinIndex, amount);
+        setResult("Giao dịch bán token đang được xử lý...");
+        await tx.wait();
+        setResult("Bán token thành công!");
+      }
+    } catch (error) {
+      console.error(error);
+      setResult("Có lỗi xảy ra trong giao dịch");
+    }
+  };
+
+  return (
+    <div className='section'>
         <h2>Swap Token</h2>
         <form onSubmit={handleSubmit} className='form'>
           <div className='formGroup'>
@@ -77,7 +85,7 @@ function SwapToken() {
         </form>
         <pre className='result'>{result}</pre>
       </div>
-    );
-  }
+  );
+}
 
-  export default SwapToken;
+export default BuySell;

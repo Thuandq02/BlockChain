@@ -1,35 +1,37 @@
 import React, { useState } from 'react';
 import '../App.css';
-import axios from 'axios';
+import { ethers } from 'ethers';
+import { connectWallet } from '../services/web3';
+import TokenContractABI from '../Abi/TokenContract.json';
 
-
-const baseUrl = 'http://localhost:3000';
-const TOKEN_ADDRESS = '0xF8aC3482509Cf7a8776f0ae4cDfed4c26FA895e4';
+const TOKEN_ADDRESS = '0x9d11d69636C8160eb3cffBdBBfcffaB47e7D0049';
 
 
 // Component tạo Token
 function CreateToken() {
     const [formData, setFormData] = useState({
       name: '',
-      symbol: '',
-      decimals: ''
+      symbol: ''
     });
     const [result, setResult] = useState('');
-
     const handleSubmit = async (e) => {
       e.preventDefault();
-      const data = JSON.stringify({
-        name: formData.name,
-        symbol: formData.symbol,
-        decimals: Number(formData.decimals),
-        fromAddress: TOKEN_ADDRESS
-      });
-    
+      const provider = await connectWallet();
+      if (!provider) return;
+  
+      const signer = await provider.getSigner();
+      const factoryContract = new ethers.Contract(TOKEN_ADDRESS, TokenContractABI.abi, signer);
+  
       try {
-        const response = await axios.post(`${baseUrl}/create-token`, data);
-        setResult(`Price set successfully! Transaction: ${JSON.stringify(response.data.receipt)}`);
+        console.log(formData);
+        // const fee = await factoryContract.creationFee();
+        const tx = await factoryContract.created(formData.name, formData.symbol);
+        setResult("Giao dịch đang được xác nhận...");
+        await tx.wait();
+        setResult("Token đã được tạo thành công!");
       } catch (error) {
-        setResult(`Error: ${error.response ? error.response.data.error : error.message}`);
+        console.error(error);
+        setResult("Có lỗi xảy ra khi tạo Token: " + error);
       }
     };
   
@@ -60,20 +62,7 @@ function CreateToken() {
               required
               className='input'
             />
-          </div>
-          <div className='formGroup'>
-            <label>Decimals:</label>
-            <input
-              type="number"
-              value={formData.decimals}
-              onChange={(e) =>
-                setFormData({ ...formData, decimals: e.target.value })
-              }
-              required
-              className='input'
-            />
-          </div>
-          
+          </div>          
           <button type="submit" className='button'>Tạo Token</button>
         </form>
         <pre className='result'>{result}</pre>

@@ -1,6 +1,6 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
+  /* max-width: 1280px; */
+  /* margin: 0 auto; */
   padding: 2rem;
   text-align: center;
 }
@@ -9,6 +9,11 @@
   max-width: '600px';
   margin: '20px auto';
   font-family: 'Arial, sans-serif';
+}
+
+.list {
+  width: 1500px;
+  margin: 0 auto
 }
 
 .logo {
