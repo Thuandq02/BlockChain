@@ -12,6 +12,7 @@ function ListToken() {
     async function fetchToken() {
       try {
         const response = await axios.get('http://localhost:3000/api/tokens');
+        // console.log(response.data);
         settokens(response.data);
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu token:", error);
@@ -20,22 +21,31 @@ function ListToken() {
     fetchToken();
   }, []);
 
-  // Hàm gọi khi user bấm nút View
-  // const handleView = (meme) => {
-  //   // Chuyển đến đường dẫn /buy-sell/:tokenAddress
-  //   navigate(`/buy-sell/${meme.tokenAddress}`);
-  // };
-
   return (
     <div>
-      <h2>Danh sách Token</h2>
+      <h2>Danh sách Tokens</h2>
       <ul>
-        {tokens.map((token) => (
-          <li key={token._id}>
-            <strong>{token.name}</strong> ({token.symbol}) - Tạo bởi: {token.creator} - Tổng token: {BigInt(token.totalTokens ?? 0)}
-            {/* <button onClick={() => handleView(meme)}>View</button> */}
-          </li>
-        ))}
+        <div class="card-container">
+          {Array.isArray(tokens) && tokens.length > 0 ? (
+            tokens.map((token) => (
+              <div class="card">
+                <div class="card-header">
+                  <strong>{token.name}</strong> <span>({token.symbol})</span>
+                </div>
+                <div class="card-body">
+                  <p>Tạo bởi: {token.creator}</p>
+                  <p>Tổng token: {token.total_token}</p>
+                </div>
+                <div class="card-footer">
+                  <button onclick="handleView()">View</button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>Không có tokens nào.</p> // Hiển thị nếu không có tokens
+          )}
+        </div>
+
       </ul>
     </div>
   );

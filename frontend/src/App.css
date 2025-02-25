@@ -5,17 +5,6 @@
   text-align: center;
 }
 
-.App {
-  max-width: '600px';
-  margin: '20px auto';
-  font-family: 'Arial, sans-serif';
-}
-
-.list {
-  width: 1500px;
-  margin: 0 auto
-}
-
 .logo {
   height: 6em;
   padding: 1.5em;
@@ -36,13 +25,8 @@
   padding: '20px';
   margin-bottom: '20px';
 }
-.form {
-  display: 'flex';
-  flex-direction: 'column';
-}
-.formGroup {
-  margin-bottom: '10px';
-}
+
+
 .input {
   padding: '8px';
   margin-top: '5px';
@@ -68,9 +52,10 @@
 }
 
 body {
+  display: block;
   font-family: Arial, sans-serif;
   background-color: #f2f2f2;
-  margin: 20px;
+  margin: 10px;
 }
 h1, h2 {
   color: #333;
@@ -113,6 +98,60 @@ button:hover {
   margin-top: 10px;
   white-space: pre-wrap;
   font-family: monospace;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Tạo 4 cột trong mỗi hàng */
+  gap: 20px;        /* Khoảng cách giữa các card */
+  padding: 20px;
+}
+
+.card {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Hiệu ứng hover */
+}
+
+.card-header {
+  background-color: #f7f7f7;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-body {
+  padding: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.card-footer {
+  padding: 15px;
+  text-align: center;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 @keyframes logo-spin {

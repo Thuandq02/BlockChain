@@ -11,10 +11,10 @@ async function main() {
   console.log(`🎧 Listening for events on contract: ${process.env.CONTRACT_ADDRESS}`);
   contract.on("TokenCreated", async (creator, tokenAddress, name, symbol, event) => {
     console.log(`🔔 New Event Detected!`);
-    console.log(`📌 creator: ${creator}`);
-    console.log(`📝 tokenAddress: ${tokenAddress}`);
-    console.log(`👤 name: ${name}`);
-    console.log(`🔗 symbol : ${symbol}`);
+    // console.log(`📌 creator: ${creator}`);
+    // console.log(`📝 tokenAddress: ${tokenAddress}`);
+    // console.log(`👤 name: ${name}`);
+    // console.log(`🔗 symbol : ${symbol}`);
     console.log("-----------------------------------");
   });
   // contract.events.TokenCreated({ fromBlock: "latest" })
@@ -43,11 +43,20 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const coins = await MemeCoin.find().sort({ createdAt: -1 });
-    res.json(coins);
+    const query = 'SELECT * FROM tokens';
+    connection.query(query, (err, results) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error ' });
+      } else {
+        console.error(results);
+        res.json(results);
+      }
+    });
+    
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error ' });
   }
 });
 
