@@ -1,14 +1,23 @@
 // contract.js
-import {Web3} from 'web3';
+import { Web3 } from 'web3';
 import dotenv from 'dotenv';
 
 dotenv.config();
+const webSocketProvider = new Web3.providers.WebsocketProvider(process.env.INFURA_WS);
+const web3 = new Web3(webSocketProvider);
 
-const web3 = new Web3(new Web3.providers.WebsocketProvider(process.env.INFURA_WS));
+// em tra socket
+webSocketProvider.on('connect', () => {
+  console.log('✅ WebSocket connected!');
+});
+webSocketProvider.on('error', (error) => {
+  console.error('❌ WebSocket Error:', error);
+});
+
 
 // Địa chỉ hợp đồng và ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const contractABI =  [
+const contractABI = [
   {
     "inputs": [],
     "stateMutability": "nonpayable",

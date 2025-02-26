@@ -1,7 +1,9 @@
 /node_modules/*
+/backend/node_modules/*
 /ignition/deployments/*
 /backend/.env
 /artifacts/*
 /cache/*
 /package-lock.json
+/backend/package-lock.json
 /hardhat.config.js

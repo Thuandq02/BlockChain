@@ -9,35 +9,23 @@ dotenv.config();
 
 async function main() {
   console.log(`🎧 Listening for events on contract: ${process.env.CONTRACT_ADDRESS}`);
+  contract.events.allEvents()
+  .on('data', (event) => {
+    console.log("📢 Event detected:", event);
+  })
+  .on('error', (error) => {
+    console.error("❌ Error:", error);
+  });
+
+  
   contract.on("TokenCreated", async (creator, tokenAddress, name, symbol, event) => {
     console.log(`🔔 New Event Detected!`);
-    // console.log(`📌 creator: ${creator}`);
-    // console.log(`📝 tokenAddress: ${tokenAddress}`);
-    // console.log(`👤 name: ${name}`);
-    // console.log(`🔗 symbol : ${symbol}`);
+    console.log(`📌 creator: ${creator}`);
+    console.log(`📝 tokenAddress: ${tokenAddress}`);
+    console.log(`👤 name: ${name}`);
+    console.log(`🔗 symbol : ${symbol}`);
     console.log("-----------------------------------");
   });
-  // contract.events.TokenCreated({ fromBlock: "latest" })
-  //     .on("data", (event) => {
-  //         console.log(`🔥 New Token detected!`);
-  //         console.log(`🔹 Owner: ${event.returnValues.creator}`);
-  //         console.log(`🔹 tokenAddress: ${event.returnValues.tokenAddress}`);
-  //         console.log(`🔹 name ID: ${event.returnValues.name}`);
-  //         console.log(`🔹 name ID: ${event.returnValues.symbol}`);
-  //         console.log("----------------------------");
-  //         // const query = 'INSERT INTO tokens (name, symbol, decimals, token_address) VALUES (?, ?, ?, ?)';
-  //         // connection.query(query, [name, symbol, decimals, fromAddress], (err, result) => {
-  //         // if (err) {
-  //         //   console.error('Error saving token creation data:', err);
-  //         // } else {
-  //         //   console.log('Token creation data saved:', result);
-  //         // }
-  //         // });
-
-  //     })
-  //     .on("error", (error) => {
-  //         console.error("❌ Error:", error);
-  //     });
 }
 const router = express.Router();
 
@@ -49,11 +37,10 @@ router.get('/', async (req, res) => {
         console.error(err);
         res.status(500).json({ error: 'Server error ' });
       } else {
-        console.error(results);
         res.json(results);
       }
     });
-    
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error ' });
