@@ -6,7 +6,7 @@ import ListToken from './components/ListToken';
 function App() {
   return (
     <div className="App">
-      <h1>Quản lý Token</h1>
+      <h1>Welcome to Thuandq scam 📌</h1>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
       <div className='acction'>
         <CreateToken />

@@ -8,43 +8,49 @@ import cors from 'cors';
 dotenv.config();
 
 async function main() {
-  console.log(`🎧 Listening for events on contract: ${process.env.CONTRACT_ADDRESS}`);
-  contract.events.allEvents()
-  .on('data', (event) => {
-    console.log("📢 Event detected:", event);
-  })
-  .on('error', (error) => {
-    console.error("❌ Error:", error);
-  });
+    console.log(`🎧 Listening for events on contract: ${process.env.CONTRACT_ADDRESS}`);
+    // contract.events.allEvents()
+    // .on('data', (event) => {
+    //   console.log("📢 Event detected:", event);
+    // })
+    // .on('error', (error) => {
+    //   console.error("❌ Error:", error);
+    // });
 
-  
-  contract.on("TokenCreated", async (creator, tokenAddress, name, symbol, event) => {
-    console.log(`🔔 New Event Detected!`);
-    console.log(`📌 creator: ${creator}`);
-    console.log(`📝 tokenAddress: ${tokenAddress}`);
-    console.log(`👤 name: ${name}`);
-    console.log(`🔗 symbol : ${symbol}`);
-    console.log("-----------------------------------");
-  });
+
+    contract.events.TokenCreated({fromBlock: "latest"})
+        .on("data", (event) => {
+            console.log(`🔥 New Transfer detected!`);
+            console.log(`🔹 From: ${event.returnValues.from}`);
+            console.log(`🔹 To: ${event.returnValues.to}`);
+            console.log(`🔹 Token ID: ${event.returnValues.tokenId}`);
+            console.log("----------------------------");
+            console.log("save to db");
+
+        })
+        .on("error", (error) => {
+            console.error("❌ Error:", error);
+        });
 }
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  try {
-    const query = 'SELECT * FROM tokens';
-    connection.query(query, (err, results) => {
-      if (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error ' });
-      } else {
-        res.json(results);
-      }
-    });
+    try {
+        const query = 'SELECT * FROM tokens';
+        connection.query(query, (err, results) => {
+            if (err) {
+                console.error(err);
+                res.status(500).json({error: 'Server error '});
+            } else {
+                res.json(results);
+            }
+        });
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Server error ' });
-  }
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({error: 'Server error '});
+    }
 });
 
 const app = express();
@@ -55,7 +61,7 @@ app.use('/api/tokens', router);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
 main().catch(console.error);
